@@ -1,0 +1,17 @@
+---
+# To check the version of log4j installed on servers
+- name: get bosapa details
+  hosts: all
+  gather_facts: no
+  remote_user: root
+  become: true
+  ignore_errors: yes
+  tasks:
+    - name: Check the repo log4j
+      shell: rpm -qa log4j;
+      args:
+        executable: /bin/bash
+      register: shell_result
+
+    - debug:
+        var: shell_result.stdout_lines
