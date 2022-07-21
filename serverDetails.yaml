@@ -1,0 +1,23 @@
+- name: get hostname,patch details,uptime,ip address and redhat version
+  hosts: all
+  gather_facts: no
+  remote_user: root
+  become: true
+  #ignore_errors: yes
+  tasks:
+    - name: This will change the working directory to /root/bosapa/data/ before executing the command
+      shell: hostname|tr '\n' ':'; cat *|tr '\n' ':';uptime | awk '{print $3,$4}'|tr '\n' ':';nslookup `uname -n` | grep  ^Address | grep -v '#' | awk '{print $2}' | tr '\n' ':'; uname -r |tr '\n' ':'| cat /etc/redhat-release
+      args:
+        chdir: /root/bosapa/data/
+        executable: /bin/bash
+      register: shell_result
+
+
+    - name: copy output to local file
+      hosts: localhost
+      become: false
+      local_action: lineinfile line={{ shell_result.stdout }} insertafter=EOF dest=/home/AvailableServer.txt
+
+
+    - debug:
+        var: shell_result.stdout_lines
