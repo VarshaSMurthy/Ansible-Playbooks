@@ -1,0 +1,19 @@
+---
+- name: Updating kettello certificate in all the servers
+  hosts: all
+  tasks:
+
+    - name: copy the rpm to all the hosts
+      copy:
+        src: katello-ca-consumer-latest.noarch.rpm
+        dest: /tmp/
+
+    - name: update the kettello RPM in servers
+      yum:
+        name: /tmp/katello-ca-consumer-latest.noarch.rpm
+        state: latest
+
+    - name: Remove gugent
+      yum:
+        name: gugent
+        state: absent
